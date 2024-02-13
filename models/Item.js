@@ -5,6 +5,7 @@ const Item = db.define('Item',
     name: DataTypes.STRING,
     quantity: DataTypes.INTEGER,
     purchased: DataTypes.BOOLEAN,
+    createdBy: DataTypes.STRING
 },{
     timestamps: true
 })
