@@ -55,9 +55,17 @@ app.get("/users/:id/lists", async (req, res) => {
 app.get("list/:id", async (req, res) => {
     const list = await List.findOne({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            include: [
+                {
+                  model: User,
+                  as: 'collaborators', // Alias used in the association definition
+                  attributes: ['id', 'username'], // Only include certain attributes of the User model
+                }
+              ]
         }
     })
+    res.json(list)
 })
 
 // Update a list 
@@ -84,6 +92,19 @@ app.delete("users/:userId/list/:listId", async (req, res) => {
 });
 
 // Add collaborator to list
-
+app.get("list/:listId/collaborator/:collaboratorId", async (req, res) => {
+    const collaborator = await User.findOne({
+        where: {
+            id: req.params.collaboratorId
+        }
+    });
+    const list  = await List.findOne({
+        where: {
+            id: req.params.listId,
+        }
+    });
+    await list.addCollaborators(collaborator);
+    res.json(list);
+})
 
 module.exports = app;
