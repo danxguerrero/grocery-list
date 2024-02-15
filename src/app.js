@@ -44,29 +44,38 @@ app.post("/users/:id/list", async (req, res) => {
 // Get all lists from created by a user
 app.get("/users/:id/lists", async (req, res) => {
     const allLists = await List.findAll({
+        include: [
+            {
+              model: User,
+              as: 'collaborators', // Alias used in the association definition
+              attributes: ['id', 'username'], // Only include certain attributes of the User model
+            }
+          ],
         where: {
-            userId: req.params.id
+            userId: req.params.id,
         }
     });
     res.json(allLists)
 });
 
+app.get("/lists", async (req, res) => {
+    const allLists = await List.findAll({
+        include: [
+            {
+              model: User,
+              as: 'collaborators', // Alias used in the association definition
+              attributes: ['id', 'username'], // Only include certain attributes of the User model
+            }
+          ]
+    });
+    res.json(allLists)
+})
+
 // Get a list by id
 app.get("list/:id", async (req, res) => {
-    const list = await List.findOne({
-        where: {
-            id: req.params.id,
-            include: [
-                {
-                  model: User,
-                  as: 'collaborators', // Alias used in the association definition
-                  attributes: ['id', 'username'], // Only include certain attributes of the User model
-                }
-              ]
-        }
-    })
+    const list = await List.findByPk(req.params.id)
     res.json(list)
-})
+});
 
 // Update a list 
 app.put("users/:userId/list/:listId", async (req, res) => {
@@ -93,16 +102,8 @@ app.delete("users/:userId/list/:listId", async (req, res) => {
 
 // Add collaborator to list
 app.get("list/:listId/collaborator/:collaboratorId", async (req, res) => {
-    const collaborator = await User.findOne({
-        where: {
-            id: req.params.collaboratorId
-        }
-    });
-    const list  = await List.findOne({
-        where: {
-            id: req.params.listId,
-        }
-    });
+    const collaborator = await User.findByPk(req.params.collaboratorId);
+    const list  = await List.findByPk(req.params.listId);
     await list.addCollaborators(collaborator);
     res.json(list);
 })
