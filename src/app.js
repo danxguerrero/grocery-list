@@ -89,6 +89,13 @@ app.put("/users/:userId/list/:listId", async (req, res) => {
     res.json(updatedList);
 });
 
+app.post("/list/:listId/collaborator/:userId", async (req, res) => {
+    const list = await List.findByPk(req.params.listId)
+    const user = await User.findByPk(req.params.userId)
+    list.addCollaborators(user)
+    res.sendStatus(201)
+})
+
 // Delete a list
 app.delete("/users/:userId/list/:listId", async (req, res) => {
     await List.destroy({
