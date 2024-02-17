@@ -72,13 +72,13 @@ app.get("/lists", async (req, res) => {
 })
 
 // Get a list by id
-app.get("list/:id", async (req, res) => {
+app.get("/list/:id", async (req, res) => {
     const list = await List.findByPk(req.params.id)
     res.json(list)
 });
 
 // Update a list 
-app.put("users/:userId/list/:listId", async (req, res) => {
+app.put("/users/:userId/list/:listId", async (req, res) => {
     const list = await List.findOne({
         where: {
             id: req.params.listId,
@@ -90,7 +90,7 @@ app.put("users/:userId/list/:listId", async (req, res) => {
 });
 
 // Delete a list
-app.delete("users/:userId/list/:listId", async (req, res) => {
+app.delete("/users/:userId/list/:listId", async (req, res) => {
     await List.destroy({
         where: {
             id: req.params.listId,
@@ -99,13 +99,5 @@ app.delete("users/:userId/list/:listId", async (req, res) => {
     });
     res.sendStatus(200);
 });
-
-// Add collaborator to list
-app.get("list/:listId/collaborator/:collaboratorId", async (req, res) => {
-    const collaborator = await User.findByPk(req.params.collaboratorId);
-    const list  = await List.findByPk(req.params.listId);
-    await list.addCollaborators(collaborator);
-    res.json(list);
-})
 
 module.exports = app;
