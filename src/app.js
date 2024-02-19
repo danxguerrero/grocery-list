@@ -89,12 +89,32 @@ app.put("/users/:userId/list/:listId", async (req, res) => {
     res.json(updatedList);
 });
 
+// Add collaborator to list
 app.post("/list/:listId/collaborator/:userId", async (req, res) => {
     const list = await List.findByPk(req.params.listId)
     const user = await User.findByPk(req.params.userId)
     list.addCollaborators(user)
     res.sendStatus(201)
-})
+});
+
+// Remove collaborator from list
+app.put("/list/:listId/collaborator/:userId", async (req, res) => {
+    try {
+      const list = await List.findByPk(req.params.listId);
+      const user = await User.findByPk(req.params.userId);
+  
+      if (!list || !user) {
+        return res.status(404).send("List or user not found");
+      }
+  
+      list.removeCollaborators(user);
+  
+      res.sendStatus(200);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal server error");
+    }
+  });
 
 // Delete a list
 app.delete("/users/:userId/list/:listId", async (req, res) => {
