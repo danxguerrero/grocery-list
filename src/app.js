@@ -157,4 +157,19 @@ app.post("/list/:listId/item", async (req, res, next) => {
     }
 })
 
+app.delete('/list/:listId/item/:itemId', async (req, res, next) => {
+    try {    
+        await Item.destroy({
+            where: {
+                id: req.params.itemId,
+                ListId: req.params.listId
+            }
+        });
+
+        res.sendStatus(200);
+    } catch (error) {
+        next(error)
+    };
+});
+
 module.exports = app;
