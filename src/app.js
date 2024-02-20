@@ -46,9 +46,9 @@ app.get("/users/:id/lists", async (req, res) => {
     const allLists = await List.findAll({
         include: [
             {
-              model: User,
-              as: 'collaborators', // Alias used in the association definition
-              attributes: ['id', 'username'], // Only include certain attributes of the User model
+                model: User,
+                as: 'collaborators', 
+                attributes: ['id', 'username'],
             }
           ],
         where: {
@@ -62,9 +62,9 @@ app.get("/lists", async (req, res) => {
     const allLists = await List.findAll({
         include: [
             {
-              model: User,
-              as: 'collaborators', // Alias used in the association definition
-              attributes: ['id', 'username'], // Only include certain attributes of the User model
+                model: User,
+                as: 'collaborators', 
+                attributes: ['id', 'username'],
             }
           ]
     });
@@ -73,7 +73,19 @@ app.get("/lists", async (req, res) => {
 
 // Get a list by id
 app.get("/list/:id", async (req, res) => {
-    const list = await List.findByPk(req.params.id)
+    const list = await List.findByPk(req.params.id, {
+        include: [
+            {
+                model: User,
+                as: 'collaborators', 
+                attributes: ['id', 'username'],
+            },
+            {
+                model: Item,
+                attributes: ['name', 'createdBy'],
+            }
+          ]
+    })
     res.json(list)
 });
 
@@ -126,5 +138,23 @@ app.delete("/users/:userId/list/:listId", async (req, res) => {
     });
     res.sendStatus(200);
 });
+
+// Item routes
+app.post("/list/:listId/item", async (req, res, next) => {
+    try {
+        const list = await List.findByPk(req.params.listId)
+
+        if (!list) {
+            return res.sendStatus(404)
+        }
+
+        const item = await Item.create(req.body)
+        item.setList(list)
+
+        res.send(item)
+    } catch (error) {
+        next(error)
+    }
+})
 
 module.exports = app;
