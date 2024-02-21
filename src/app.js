@@ -140,6 +140,7 @@ app.delete("/users/:userId/list/:listId", async (req, res) => {
 });
 
 // Item routes
+// Create an item
 app.post("/list/:listId/item", async (req, res, next) => {
     try {
         const list = await List.findByPk(req.params.listId)
@@ -157,6 +158,7 @@ app.post("/list/:listId/item", async (req, res, next) => {
     }
 })
 
+// Delete an item
 app.delete('/list/:listId/item/:itemId', async (req, res, next) => {
     try {    
         await Item.destroy({
@@ -167,6 +169,23 @@ app.delete('/list/:listId/item/:itemId', async (req, res, next) => {
         });
 
         res.sendStatus(200);
+    } catch (error) {
+        next(error)
+    };
+});
+
+// Update and item
+app.put('/list/:listId/item/:itemId', async (req, res, next) => {
+    try{
+        const item = await Item.findOne({
+            where: {
+                id: req.params.itemId,
+                ListId: req.params.listId
+            }
+        });
+
+        const updatedItem = await item.update(req.body)
+        res.send(updatedItem)
     } catch (error) {
         next(error)
     };
