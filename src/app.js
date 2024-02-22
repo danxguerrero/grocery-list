@@ -158,21 +158,16 @@ app.post("/list/:listId/item", async (req, res, next) => {
     }
 })
 
-// Delete an item
-app.delete('/list/:listId/item/:itemId', async (req, res, next) => {
-    try {    
-        await Item.destroy({
-            where: {
-                id: req.params.itemId,
-                ListId: req.params.listId
-            }
-        });
+// Get item
+app.get('/list/:listId/item/:itemId', async (req, res, next) => {
+    try {
+        const item = await Item.findByPk(req.params.itemId)
 
-        res.sendStatus(200);
+        res.send(item)
     } catch (error) {
         next(error)
-    };
-});
+    }
+})
 
 // Update and item
 app.put('/list/:listId/item/:itemId', async (req, res, next) => {
@@ -190,5 +185,23 @@ app.put('/list/:listId/item/:itemId', async (req, res, next) => {
         next(error)
     };
 });
+
+// Delete an item
+app.delete('/list/:listId/item/:itemId', async (req, res, next) => {
+    try {    
+        await Item.destroy({
+            where: {
+                id: req.params.itemId,
+                ListId: req.params.listId
+            }
+        });
+
+        res.sendStatus(200);
+    } catch (error) {
+        next(error)
+    };
+});
+
+
 
 module.exports = app;
