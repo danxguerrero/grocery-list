@@ -3,7 +3,7 @@ const app = express();
 const { User, List, Item } = require('../models/index');
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true}));
 
 // User routes
 app.get("/users", async(req, res) => {
@@ -169,7 +169,7 @@ app.get('/list/:listId/item/:itemId', async (req, res, next) => {
     }
 })
 
-// Update and item
+// Update an item
 app.put('/list/:listId/item/:itemId', async (req, res, next) => {
     try{
         const item = await Item.findOne({
